@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+var latinNums = [9]string{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"}
+var arabicNums = [9]string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
+
 func DeleteEmptySlice(s []string) []string {
 	var r []string
 	for _, str := range s {
@@ -21,8 +24,6 @@ func DeleteEmptySlice(s []string) []string {
 }
 
 func CheckNums(textArr []string) ([]string, bool, string) {
-	latinNums := [9]string{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"}
-	arabicNums := [9]string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	operationPossible := false
 	firstNumLatin := false
 	secondNumLatin := false
@@ -77,7 +78,7 @@ func CheckText(text string) error {
 	}
 
 	if len([]rune(text)) < 3 {
-		err := errors.New("Строка меньше 3 символов")
+		err := errors.New("Выдача паники, так как строка не является математической операцией.")
 		return err
 	}
 
@@ -88,7 +89,7 @@ func CheckText(text string) error {
 
 	regularCheck := regexp.MustCompile(`^(?:[1-9]|I|II|III|IV|V|VI|VII|VIII|IX)[+\-*/](?:[1-9]|I|II|III|IV|V|VI|VII|VIII|IX)$`)
 	if !(regularCheck.MatchString(text)) {
-		err := errors.New("Строка не соотвествует формату 1 + 1, I + IV...")
+		err := errors.New("Выдача паники, так как формат математической операции не удовлетворяет заданию — два операнда и один оператор (+, -, /, *).")
 		return err
 	}
 
@@ -99,18 +100,27 @@ func CheckText(text string) error {
 	textArr, operationPossible, numsType := CheckNums(textArr)
 
 	if !operationPossible {
-		err := errors.New("Операция невозможна. Латинские и арабские цифры")
+		err := errors.New("Выдача паники, так как используются одновременно разные системы счисления.")
 		return err
 	}
 
 	result := Operation(text, textArr)
 
 	if numsType == "latin" && result < 0 {
-		err := errors.New("В Римской системе нет цифр меньше 0")
+		err := errors.New("Выдача паники, так как в римской системе нет отрицательных чисел.\n")
 		return err
 	}
 
-	fmt.Println(result)
+	if numsType == "latin" && result < 1 {
+		err := errors.New("Выдача паники, результат работы с римскими цифрами меньше еденицы.\n")
+		return err
+	}
+
+	if numsType == "latin" {
+		fmt.Println(latinNums[result-1])
+	} else {
+		fmt.Println(result)
+	}
 
 	return nil
 }
