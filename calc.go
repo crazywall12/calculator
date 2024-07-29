@@ -20,7 +20,7 @@ func DeleteEmptySlice(s []string) []string {
 	return r
 }
 
-func checkNums(textArr []string) ([]string, bool, string) {
+func CheckNums(textArr []string) ([]string, bool, string) {
 	latinNums := [9]string{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"}
 	arabicNums := [9]string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	operationPossible := false
@@ -96,7 +96,7 @@ func CheckText(text string) error {
 	textArr = regexp.MustCompile("[+\\-/*]").Split(text, -1)
 	textArr = DeleteEmptySlice(textArr)
 
-	textArr, operationPossible, numsType := checkNums(textArr)
+	textArr, operationPossible, numsType := CheckNums(textArr)
 
 	if !operationPossible {
 		err := errors.New("Операция невозможна. Латинские и арабские цифры")
